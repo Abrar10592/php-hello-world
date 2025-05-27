@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Abrar10592/php-hello-world.git'
+                git branch: 'main', url: 'https://github.com/Abrar10592/php-hello-world.git'
             }
         }
         stage('Build Image') {
@@ -17,7 +17,7 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    docker.image("abrar10592/php-hello-world:latest").inside {
+                    dockerImage.inside {
                         sh 'php index.php'
                     }
                 }
