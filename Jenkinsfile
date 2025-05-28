@@ -1,19 +1,25 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'abrar10592/php-hello-world:latest'
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Abrar10592/php-hello-world.git'
             }
         }
-        stage('Build Image') {
+
+        stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("abrar10592/php-hello-world:latest")
+                    dockerImage = docker.build("${IMAGE_NAME}")
                 }
             }
         }
+
         stage('Run Container') {
             steps {
                 script {
@@ -23,11 +29,12 @@ pipeline {
                 }
             }
         }
-        stage('Push Image') {
+
+        stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
-                        docker.withRegistry('', 'dockerhub-credentials') {
+                        docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
                             dockerImage.push()
                         }
                     }
